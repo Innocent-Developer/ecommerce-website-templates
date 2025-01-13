@@ -10,6 +10,7 @@ import { Salecard } from "./files/Salecard";
 import ProductDetails from "./files/SelectProduct";
 import { BuyOrder } from "./files/Order/BuyOrder";
 import Login from "./UserAccount/Login";
+import CreateAccount from "./UserAccount/CreateAccount";
 
 function App() {
   return (
@@ -34,7 +35,8 @@ function App() {
         <Route path="/*" element={<Notfound />} />
         <Route path="/*/*/*" element={<Notfound />} />
         {/* account route */}
-        <Route path="/account/" element={<Login />} />
+        <Route path="/account/login" element={<Login />} />
+        <Route path="/account/create-account" element={<CreateAccount />} />
 
       </Routes>
       <Footer />

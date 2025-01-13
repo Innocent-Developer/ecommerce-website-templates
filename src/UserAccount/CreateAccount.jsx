@@ -4,37 +4,53 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
-const Login = () => {
-  const [login, setLogin] = useState({
+const CreateAccount = () => {
+  const navigate = useNavigate();
+  const [create, setCreate] = useState({
+    fullName: '',
+    username: '',
     email: '',
-    password: ''
+    password: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Hook for navigation
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLogin({ ...login, [name]: value });
+    setCreate({ ...create, [name]: value });
   };
 
-  const handleLogin = async (e) => {
+  const validateForm = () => {
+    if (!create.fullName.trim()) return 'Full Name is required.';
+    if (!create.username.trim()) return 'Username is required.';
+    if (!create.email.includes('@')) return 'Invalid email address.';
+    if (create.password.length < 8) return 'Password must be at least 8 characters.';
+    return '';
+  };
+
+  const handleSignup = async (e) => {
     e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
-       await axios.post(
-        'http://localhost:5000/account/login',
-        login
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/account/signup`,
+        create
       );
-      console.log('Login Successful:');
-      setError(`Login Successful`);
-      toast.success('Login Successful');
-      navigate('/');
+      toast.success('Signup Successful');
+    console.log(response.data);
+      setCreate({ fullName: '', username: '', email: '', password: '' });
+      navigate('/account/login');
     } catch (err) {
-      setError(err?.data?.message || 'Something went wrong. Please try again.');
-      console.error('Login Error:', err);
-      toast.error('Login failed');
+      const message = err.response?.data?.message || 'Something went wrong. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -42,17 +58,41 @@ const Login = () => {
 
   return (
     <StyledWrapper>
-      <form className="form" onSubmit={handleLogin}>
-        <p className="form-title">Sign in to your account</p>
+      <form className="form" onSubmit={handleSignup}>
+        <p className="form-title">Create a New Account</p>
         {error && <p className="error-message">{error}</p>}
+        <div className="input-container">
+          <label htmlFor="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Enter your full name"
+            value={create.fullName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="input-container">
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Choose a username"
+            value={create.username}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <div className="input-container">
           <label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
             name="email"
-            placeholder="Enter email"
-            value={login.email}
+            placeholder="Enter your email"
+            value={create.email}
             onChange={handleChange}
             required
           />
@@ -63,23 +103,22 @@ const Login = () => {
             type="password"
             id="password"
             name="password"
-            placeholder="Enter password"
-            value={login.password}
+            placeholder="Create a password"
+            value={create.password}
             onChange={handleChange}
             required
           />
         </div>
         <button type="submit" className="submit" disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? 'Signing up...' : 'Sign up'}
         </button>
         <p className="signup-link">
-          No account? <NavLink to={"/account/create-account"}>Sign up</NavLink>
+          Already have an account? <NavLink to="/account/login">Log in</NavLink>
         </p>
       </form>
     </StyledWrapper>
   );
 };
-
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -199,4 +238,4 @@ const StyledWrapper = styled.div`
   }
 `;
 
-export default Login;
+export default CreateAccount;
