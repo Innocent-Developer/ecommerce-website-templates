@@ -40,7 +40,7 @@ const CreateAccount = () => {
     setError('');
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/account/signup`,
+        `${process.env.REACT_APP_API_URL || 'https://ecommerce-website-backend-t217.onrender.com'}/account/signup`,
         create
       );
       toast.success('Signup Successful');
