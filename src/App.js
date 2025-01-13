@@ -17,8 +17,9 @@ function App() {
     <>
       <Navbar />
       <Routes>
+      <Route path="/" element={<Login />} />
         <Route
-          path="/"
+          path="/home"
           element={
             <>
               <HeroSection />

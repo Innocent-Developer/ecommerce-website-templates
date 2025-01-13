@@ -23,14 +23,16 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-       await axios.post(
+      const response = await axios.post(
         'https://ecommerce-website-backend-t217.onrender.com/account/login',
         login
       );
       console.log('Login Successful:');
       setError(`Login Successful`);
+      const { data } = response;
+      console.log('Login Data:', data.data.id);
       toast.success('Login Successful');
-      navigate('/');
+      navigate(`/home/${data.data.id}`);
     } catch (err) {
       setError(err?.data?.message || 'Something went wrong. Please try again.');
       console.error('Login Error:', err);
